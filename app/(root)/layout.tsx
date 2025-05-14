@@ -10,7 +10,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	title: "Ruqiza Store",
-	description: "Ruqiza Ecommerce Store",
+	description:
+		"Shop all your needs at Ruqiza Ecommerce Store and get the best deals.",
 };
 
 export default function RootLayout({
@@ -19,15 +20,17 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<ClerkProvider>
-			<html lang="en">
-				<body className={inter.className}>
-					<ToasterProvider />
-					<Navbar />
-					<ChatBot />
-					{children}
-				</body>
-			</html>
-		</ClerkProvider>
+		<>
+			<ClerkProvider>
+				<html lang="en">
+					<body className={inter.className}>
+						<ToasterProvider />
+						<Navbar />
+						<ChatBot />
+						{children}
+					</body>
+				</html>
+			</ClerkProvider>
+		</>
 	);
 }

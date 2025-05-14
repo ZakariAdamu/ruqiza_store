@@ -3,8 +3,10 @@ import Collections from "../components/Collections";
 import ProductList from "../components/ProductList";
 import Footer from "../components/Footer";
 
-export default function Home() {
-	// this route group (root) folder having this page.tsx file is the home/landing page of our app
+export default async function Home() {
+	await new Promise((resolve) => setTimeout(resolve, 2000));
+	// Simulate a delay
+
 	return (
 		<>
 			<Image

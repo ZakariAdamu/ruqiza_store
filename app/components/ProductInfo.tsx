@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import HeartFavorite from "./HeartFavorite";
+// import HeartFavorite from "./HeartFavorite";
 import { MinusCircle, PlusCircle } from "lucide-react";
 import useCart from "../lib/hooks/useCart";
+import HeartFavoriteWrapper from "./HeartFavoriteWrapper";
 
 const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
 	const [selectedColor, setSelectedColor] = useState<string>(
@@ -20,7 +21,8 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
 		<div className="max-w-[400px] flex flex-col gap-4">
 			<div className="flex justify-between items-center">
 				<p className="text-heading3-bold">{productInfo.title}</p>
-				<HeartFavorite product={productInfo} />
+				{/* <HeartFavorite product={productInfo} /> */}
+				<HeartFavoriteWrapper product={productInfo} />
 			</div>
 
 			<div className="flex gap-2">
