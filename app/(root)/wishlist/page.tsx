@@ -1,6 +1,7 @@
 "use client";
 
-import Loader from "@/app/components/Loader";
+import Loading from "@/app/components/Loading";
+// import Loader from "@/app/components/Loader";
 import ProductCard from "@/app/components/ProductCard";
 import { getProductDetails } from "@/app/lib/actions/actions";
 import { useUser } from "@clerk/nextjs";
@@ -52,13 +53,21 @@ const Wishlist = () => {
 		);
 	};
 
-	if (loading) return <Loader loading={loading} />;
+	if (loading)
+		return (
+			<div className="flex justify-center items-center h-screen">
+				<Loading />
+				{/* <Loader /> */}
+			</div>
+		);
 	if (error) return <p className="text-red-500">{error}</p>;
 
 	return (
 		<div className="px-10 py-5">
 			<p className="text-heading3-bold my-10">Your Wishlist</p>
-			{wishlist.length === 0 && <p className="text-body-semibold">No items in your wishlist</p>}
+			{wishlist.length === 0 && (
+				<p className="text-body-semibold">No items in your wishlist</p>
+			)}
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-16 mx-auto">
 				{wishlist.map((product) => (
@@ -72,7 +81,5 @@ const Wishlist = () => {
 		</div>
 	);
 };
-
-// export const dynamic = "force-dynamic";
 
 export default Wishlist;
