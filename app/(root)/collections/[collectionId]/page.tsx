@@ -1,20 +1,18 @@
-export const dynamic = "force-dynamic";
-
 import ProductCard from "@/app/components/ProductCard";
 import { getCollectionDetails } from "@/app/lib/actions/actions";
 import Image from "next/image";
 
-const CollectionDetails = async (
-    props: {
-        params: Promise<{ collectionId: string }>;
-    }
-) => {
-    const params = await props.params;
-    const collectionDetails = await getCollectionDetails(params.collectionId);
+const CollectionDetails = async (props: {
+	params: Promise<{ collectionId: string }>;
+}) => {
+	await new Promise((resolve) => setTimeout(resolve, 2000));
+	// Simulate a delay
+	const params = await props.params;
+	const collectionDetails = await getCollectionDetails(params.collectionId);
 
-    // console.log(collectionDetails);
+	// console.log(collectionDetails);
 
-    return (
+	return (
 		<div className="px-10 py-5  flex flex-col items-center gap-8">
 			<Image
 				src={collectionDetails.image}
