@@ -1,0 +1,40 @@
+name: Gemini AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  gemini-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Gemini CLI
+        run: |
+          curl -fsSL https://cli.gemini.dev/install.sh | bash
+          gemini --version
+
+      - name: Authenticate Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          gemini auth --api-key "$GEMINI_API_KEY"
+
+      - name: Run Gemini code review
+        run: |
+          gemini review \
+            --base origin/main \
+            --head HEAD \
+            --config .gemini.yml \
+            --format sarif \
+            --out gemini-results.sarif
+
+      - name: Upload review results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gemini-results.sarif

@@ -1,0 +1,24 @@
+reviews:
+  focus:
+    - security
+    - performance
+    - maintainability
+  severity:
+    block:
+      - critical
+      - high
+    warn:
+      - medium
+      - low
+  scope:
+    diff_only: true
+    max_files: 200
+  output:
+    comment_on_pr: true
+    summary: true
+    detailed_report: false
+  notifications:
+    email:
+      enabled: true
+      recipients:
+        - zakari.adamu714@gmail.com
