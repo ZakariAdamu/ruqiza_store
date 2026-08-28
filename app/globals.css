@@ -11,6 +11,12 @@ body,
   /* color: #60608b; */
 }
 
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 
 
 @layer base {
