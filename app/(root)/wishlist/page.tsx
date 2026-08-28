@@ -1,6 +1,6 @@
 "use client";
 
-import Loading from "@/app/components/Loading";
+import { WishlistSkeleton } from "@/app/components/Loading";
 // import Loader from "@/app/components/Loader";
 import ProductCard from "@/app/components/ProductCard";
 import { getProductDetails } from "@/app/lib/actions/actions";
@@ -68,10 +68,7 @@ const Wishlist = () => {
 
 	if (loading)
 		return (
-			<div className="flex justify-center items-center h-screen">
-				<Loading />
-				{/* <Loader /> */}
-			</div>
+			<WishlistSkeleton />
 		);
 	if (error) return <p className="text-red-500">{error}</p>;
 
