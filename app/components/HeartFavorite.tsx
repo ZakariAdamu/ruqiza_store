@@ -1,9 +1,9 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface HeartFavoriteProps {
 	product: ProductType;
@@ -12,13 +12,18 @@ interface HeartFavoriteProps {
 
 const HeartFavorite = ({ product, updateSignedInUser }: HeartFavoriteProps) => {
 	const { user } = useUser();
+	const { getToken } = useAuth();
 	const router = useRouter();
 	const [isLiked, setIsLiked] = useState(false);
 
 	// Fetch user's wishlist data
-	const fetchUserWishlist = async () => {
+	const fetchUserWishlist = useCallback(async () => {
 		try {
-			const res = await fetch("/api/users");
+			const token = await getToken();
+			const res = await fetch("/api/users", {
+				credentials: "include",
+				headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+			});
 			if (!res.ok) throw new Error("Failed to fetch user data");
 
 			const data = await res.json();
@@ -26,13 +31,13 @@ const HeartFavorite = ({ product, updateSignedInUser }: HeartFavoriteProps) => {
 		} catch (error) {
 			console.error("[users_GET] Error fetching user data:", error);
 		}
-	};
+	}, [product._id]);
 
 	useEffect(() => {
 		if (user) {
 			fetchUserWishlist();
 		}
-	}, [user]);
+	}, [user, fetchUserWishlist]);
 
 	// Handle adding/removing item from wishlist
 	const handleLike = async (
@@ -41,15 +46,18 @@ const HeartFavorite = ({ product, updateSignedInUser }: HeartFavoriteProps) => {
 		e.preventDefault();
 
 		if (!user) {
-			router.push("/sign-in");
+			router.replace("/sign-in");
 			return;
 		}
 
 		try {
+			const token = await getToken();
 			const res = await fetch("/api/users/wishlist", {
 				method: "POST",
+				credentials: "include",
 				headers: {
 					"Content-Type": "application/json",
+					...(token ? { Authorization: `Bearer ${token}` } : {}),
 				},
 				body: JSON.stringify({ productId: product._id }),
 			});

@@ -4,11 +4,12 @@ import Loading from "@/app/components/Loading";
 // import Loader from "@/app/components/Loader";
 import ProductCard from "@/app/components/ProductCard";
 import { getProductDetails } from "@/app/lib/actions/actions";
-import { useUser } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
 const Wishlist = () => {
-	const { user } = useUser();
+	const { user, isLoaded } = useUser();
+	const { getToken } = useAuth();
 	const [loading, setLoading] = useState(true);
 	const [wishlist, setWishlist] = useState<ProductType[]>([]);
 	const [error, setError] = useState<string | null>(null);
@@ -16,9 +17,19 @@ const Wishlist = () => {
 	// Fetch user and wishlist products simultaneously
 	const fetchUserAndWishlist = async () => {
 		try {
-			if (!user) return; // No need to fetch if the user isn't logged in
+			if (!user) {
+				setLoading(false);
+				return;
+			}
 
-			const res = await fetch("/api/users");
+			const token = await getToken();
+			const res = await fetch("/api/users", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+			});
 			if (!res.ok) throw new Error("Failed to fetch user data");
 
 			const signedInUser = await res.json();
@@ -26,7 +37,7 @@ const Wishlist = () => {
 				signedInUser.wishlist.map(async (productId: string) => {
 					const product = await getProductDetails(productId);
 					return product;
-				})
+				}),
 			);
 
 			setWishlist(wishlistProducts);
@@ -39,17 +50,19 @@ const Wishlist = () => {
 	};
 
 	useEffect(() => {
-		fetchUserAndWishlist();
-	}, [user]);
+		if (isLoaded) {
+			fetchUserAndWishlist();
+		}
+	}, [user, isLoaded]);
 
 	const updateSignedInUser = (updatedUser: UserType) => {
 		setWishlist(
 			(prevWishlist) =>
 				updatedUser.wishlist
 					.map((productId) =>
-						prevWishlist.find((product) => product._id === productId)
+						prevWishlist.find((product) => product._id === productId),
 					)
-					.filter(Boolean) as ProductType[] // Filter out any undefined results
+					.filter(Boolean) as ProductType[], // Filter out any undefined results
 		);
 	};
 
@@ -65,10 +78,14 @@ const Wishlist = () => {
 	return (
 		<div className="px-10 py-5">
 			<p className="text-heading3-bold my-10">Your Wishlist</p>
-			{wishlist.length === 0 && (
-				<p className="text-body-semibold">No items in your wishlist</p>
+			
+			{!user && (
+				<p className="text-body-semibold text-grey-1">Please sign in to view your wishlist items.</p>
 			)}
 
+			{user && wishlist.length === 0 && (
+				<p className="text-body-semibold">No items in your wishlist</p>
+			)}
 			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-16 mx-auto">
 				{wishlist.map((product) => (
 					<ProductCard

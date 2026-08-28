@@ -5,17 +5,26 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
 	try {
-		const { userId } = auth();
+		const { userId, sessionId } = await auth();
+		console.log("[wishlist_POST] auth context", {
+			hasAuthHeader: Boolean(req.headers.get("authorization")),
+			hasSessionCookie: Boolean(req.cookies.get("__session")),
+			hasClerkDbJwt: Boolean(req.cookies.get("__clerk_db_jwt")),
+			userId,
+			sessionId,
+		});
 
 		if (!userId) {
-			return new NextResponse("Unauthorized, please sign in", { status: 401 });
+			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 		}
 
 		await connectToDB();
-		const user = await User.findOne({ clerkId: userId });
+
+		// We can combine the find and the check to ensure we have the latest data
+		const user = await User.findOne({ clerkId: userId }).select("wishlist");
 
 		if (!user) {
-			return new NextResponse("User not found", { status: 404 });
+			return NextResponse.json({ message: "User not found" }, { status: 404 });
 		}
 
 		const { productId } = await req.json();
@@ -26,17 +35,34 @@ export const POST = async (req: NextRequest) => {
 
 		const isLiked = user.wishlist.includes(productId);
 
+		let updatedUser;
 		if (isLiked) {
-			// Dislike a product
-			user.wishlist = user.wishlist.filter((id: string) => id !== productId);
+			// Atomic remove
+			updatedUser = await User.findOneAndUpdate(
+				{ clerkId: userId },
+				{ $pull: { wishlist: productId } },
+				{ new: true },
+			);
 		} else {
-			// Like a product
-			user.wishlist.push(productId);
+			// Atomic add (prevents duplicates)
+			updatedUser = await User.findOneAndUpdate(
+				{ clerkId: userId },
+				{ $addToSet: { wishlist: productId } },
+				{ new: true },
+			);
 		}
-		await user.save();
-		return NextResponse.json(user, { status: 200 });
+
+		return NextResponse.json(updatedUser, { status: 200 });
 	} catch (error) {
 		console.log("[wishlist_POST]", error);
+		const message =
+			error instanceof Error ? error.message : "Database connection error";
+		if (message.includes("MongoDB connection failed")) {
+			return NextResponse.json(
+				{ message: "Database unavailable. Please try again later." },
+				{ status: 503 },
+			);
+		}
 		return new NextResponse("Internal Server Error", { status: 500 });
 	}
 };

@@ -42,10 +42,9 @@ const Navbar = () => {
 				</Link>
 				<Link
 					href={user ? "/wishlist" : "/sign-in"}
-					className={`hover:text-red-600 ${
+					className={` hover:text-blue-600 ${
 						pathname === "/wishlist" && "text-red-600"
-					}`}
-					prefetch={true}
+					} hidden`}
 				>
 					Wishlist
 				</Link>
@@ -54,7 +53,6 @@ const Navbar = () => {
 					className={`hover:text-red-600 ${
 						pathname === "/orders" && "text-red-600"
 					}`}
-					prefetch={true}
 				>
 					Orders
 				</Link>

@@ -21,6 +21,7 @@ export const getCollections = async () => {
 		return collectionsData;
 	} catch (error) {
 		console.error("Failed to fetch collections:", error);
+		return [];
 	}
 };
 
@@ -52,15 +53,11 @@ export const getCollectionDetails = async (collectionId: string) => {
 	} catch (error) {
 		// Log the error for debugging and handle the failure case
 		console.error("Failed to fetch products:", error);
-		return null;
+		return [];
 	}
 };
 
 // ** get all products
-// export const getProducts = async () => {
-// 	const products = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
-// 	return await products.json();
-// };
 
 export const getProducts = async () => {
 	try {
