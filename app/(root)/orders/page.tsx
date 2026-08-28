@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 
 const Orders = async () => {
-	const { userId } = auth();
+	const { userId } = await auth();
 	const orders = await getOrders(userId as string);
 
 	// console.log(orders[0].products);

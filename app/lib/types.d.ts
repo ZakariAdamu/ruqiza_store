@@ -28,7 +28,10 @@ interface ProductCardProps {
 
 type UserType = {
 	clerkId: string;
-	wishlist: [string];
+	email: string;
+	firstName?: string;
+	lastName?: string;
+	wishlist: string[];
 	createdAt: string;
 	updatedAt: string;
 };
