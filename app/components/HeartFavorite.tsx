@@ -74,7 +74,7 @@ const HeartFavorite = ({ product, updateSignedInUser }: HeartFavoriteProps) => {
 	};
 
 	return (
-		<button onClick={handleLike}>
+		<button onClick={handleLike} className="hidden">
 			<Heart fill={isLiked ? "red" : "white"} />
 		</button>
 	);
